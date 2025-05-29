@@ -78,3 +78,46 @@ data_json = '''
 
 isaac_from_json = Person.model_validate_json(data_json)
 print(isaac_from_json)
+
+p4 = Person(first_name="Isaac", last_name="Newton", age=84, strict=True)
+
+class Contact(BaseModel):
+    email: str
+
+new_json_data = '''
+{
+    "email": {
+        "personal": "inewton@principia.com",
+        "work": "isaac.newton@themint.com"
+    }
+}
+'''
+import json
+new_data = json.loads(new_json_data)
+contact = Contact(email=str(new_data['email']))
+
+class Circle(BaseModel):
+    center_x: int = 0
+    center_y: int = 0
+    radius: int = 1
+    name: str | None = None
+
+c1 = Circle(radius=2)
+
+for k, v in c1.model_dump().items():
+    if k not in c1.model_fields_set:
+        print(k)
+
+
+def return_default_fields(obj: BaseModel)->set:
+    default_fields = {key for key in obj.model_dump() if key not in c1.model_fields_set}
+    return default_fields
+
+from typing import cast, Any
+fields: dict[str, Any] = type(c1).model_fields# type: ignore
+def main():
+    print(set(fields) - c1.model_fields_set )
+    print(type(c1).model_fields.keys() - c1.model_fields_set )
+
+if __name__ == '__main__':
+     main()
